@@ -34,5 +34,9 @@ namespace Simulation {
             }
         }
 
+        public void SpawnImmediate() {
+            _spawnInterval = 0;
+        }
+
     }
 }

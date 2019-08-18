@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Timers;
 
 namespace Simulation {
-    public class Simulation {
+    public class Simulator {
+
+        public Settings SimulationSettings { get; protected set; }
 
         private List<Circle> _activeCircles;
 
@@ -17,7 +20,13 @@ namespace Simulation {
         private CirclesDestroyer _circleDestroyer;
 
 
-        public Simulation(Circle[] circles, Settings simulationSettings) {
+        public Simulator(Circle[] circles, Settings simulationSettings) {
+            Init(circles, simulationSettings);
+        }
+
+        private void Init(Circle[] circles, Settings simulationSettings) {
+            SimulationSettings = simulationSettings;
+
             _activeCircles = new List<Circle>(circles.Length);
             var size = new Vector2(simulationSettings.GameAreaWidth, simulationSettings.GameAreaHeight);
 
@@ -35,6 +44,12 @@ namespace Simulation {
         private void CalculateSimulationRate(float maxUnitSpeed, float minUnitRadius) {
             float maxDistancePerIteration = minUnitRadius / 2f;
             SimulationRateInSeconds = maxDistancePerIteration / maxUnitSpeed;
+        }
+
+        public void Load(Circle[] circles, float rate) {
+            _activeCircles.AddRange(circles);
+            SimulationRateInSeconds = rate;
+            Start();
         }
 
         public void Start(float speed =1f) {
@@ -78,8 +93,33 @@ namespace Simulation {
             circle.Position += circle.Velocity * SimulationRateInSeconds;
         }
 
+        public CircleData[] GetCirclesData() {
+            CircleData[] data = new CircleData[_activeCircles.Count];
+            for (int i = 0; i < _activeCircles.Count; i++) {
+                data[i] = _activeCircles[i].GetDataForSave();
+            }
+            return data;
+        }
+
+        public void Reload(Circle[] circles, Settings simulationSettings) {
+            Stop();
+            Init(circles, simulationSettings);
+            _circleSpawner.SpawnImmediate();
+            Start();
+        }
+
         public void Stop() {
             _timer.Close();
+            _activeCircles.Clear();
+
+            _collisionsDetector = null;
+            _circleCollisionsResolver = null;
+            _borderCollisionsResolver = null;
+
+            _circleSpawner = null;
+            _circleDestroyer = null;
+
+            GC.Collect();
         }
 
     }

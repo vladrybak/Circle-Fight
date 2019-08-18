@@ -4,20 +4,21 @@ using UnityEngine.UI;
 
 public class PauseHandlerForEditor {
 
-    private Slider _speedSlider;
-    private float _speedBeforePause = 1;
+    private MainScreen _mainScreen;
+    private Simulation.Simulator _simulator;
 
-    public PauseHandlerForEditor(Slider speedSlider) {
-        _speedSlider = speedSlider;
+
+    public PauseHandlerForEditor(Simulation.Simulator simulator, MainScreen mainScreen) {
+        _mainScreen = mainScreen;
+        _simulator = simulator;
         EditorApplication.pauseStateChanged += PauseStaetChangedHandler;
     }
 
     private void PauseStaetChangedHandler(PauseState state) {
         if (state == PauseState.Paused) {
-            _speedBeforePause = _speedSlider.value;
-            _speedSlider.value = 0;
+            _simulator.SetSpeed(0);
         } else {
-            _speedSlider.value = _speedBeforePause;
+            _simulator.SetSpeed(_mainScreen.GetSpeedSliderValue());
         }
     }
 

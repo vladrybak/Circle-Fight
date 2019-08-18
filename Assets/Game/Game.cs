@@ -1,30 +1,33 @@
 ﻿using UnityEngine;
 using Simulation;
-using UnityEngine.UI;
 using Vector2 = UnityEngine.Vector2;
-using System;
 
 public class Game : MonoBehaviour {
 
     [SerializeField] private ViewFactory _viewFactory;
-    [SerializeField] private Slider _gameSpeedSlider;
+    [SerializeField] private UIFactory _uiFactory;
 
     private CirclesFactory _circlesFactory;
-    private Simulation.Simulation _simulation;
+    private Simulator _simulator;
     private SimulationView _view;
+
+    private MainScreen _mainScreenUI;
+
+    private GameSave _saver;
 
     private Settings _gameSettings;
 
     private Vector2 _simulationAreaSize;
 
 
-
     private void Awake() {
         _gameSettings = Configuration.LoadGameConfig();
 
-        _circlesFactory = new CirclesFactory(_gameSettings, UnityEngine.Random.Range(int.MinValue, int.MaxValue));
+        _circlesFactory = new CirclesFactory(_gameSettings, GetRandomSeed());
         var generatedCircles = _circlesFactory.GenerateCircles();
-        _simulation = new Simulation.Simulation(generatedCircles, _gameSettings);
+        _simulator = new Simulator(generatedCircles, _gameSettings);
+
+        _saver = new GameSave(_simulator, LoadFromSave);
 
         _simulationAreaSize = new Vector2(_gameSettings.GameAreaWidth, _gameSettings.GameAreaHeight);
         SetupCamera();
@@ -33,7 +36,7 @@ public class Game : MonoBehaviour {
         SetupSimulationView(generatedCircles);
 
 #if UNITY_EDITOR
-        new PauseHandlerForEditor(_gameSpeedSlider);
+        new PauseHandlerForEditor(_simulator, _mainScreenUI);
 #endif
     }
 
@@ -51,24 +54,43 @@ public class Game : MonoBehaviour {
     }
 
     private void SetupUI() {
-        _gameSpeedSlider.onValueChanged.AddListener(ChangeSimulationSpeed);
-        _gameSpeedSlider.maxValue = _simulation.SimulationRateInSeconds * 1000;
+        _mainScreenUI = _uiFactory.CreatemainScreen();
+        _mainScreenUI.Setup(_saver, _simulator, StartNew);
     }
 
     private void Start() {
-        _simulation.Start(1);
+        _simulator.Start(1);
     }
 
-    public void ChangeSimulationSpeed(float speed) {
-        _simulation.SetSpeed(speed);
+    public void StartNew() {
+        _gameSettings = Configuration.LoadGameConfig();
+        _circlesFactory.Configure(_gameSettings, GetRandomSeed());
+        Circle[] circles = _circlesFactory.GenerateCircles();
+
+        Reload(circles, _gameSettings, 1);
     }
 
-    private void Update() {
+    public void LoadFromSave(SaveData data) {
+        var circles = _circlesFactory.CreateCirclesFromData(data.Circles);
+        Reload(circles, data.Settings, data.Speed);
+    }
 
+    private void Reload(Circle[] circles, Settings settings, float speed) {
+        Destroy(_view.gameObject);
+        _simulator.Stop();
+
+        SetupSimulationView(circles);
+        _simulator.Reload(circles, settings);
+        _mainScreenUI.SetSpeedSliderValue(speed);
+        _simulator.SetSpeed(speed);
     }
 
     private void OnDestroy() {
-        _simulation.Stop();
+        _simulator.Stop();
+    }
+
+    private int GetRandomSeed() {
+        return Random.Range(int.MinValue, int.MaxValue);
     }
 
 }

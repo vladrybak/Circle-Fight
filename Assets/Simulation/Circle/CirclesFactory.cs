@@ -9,6 +9,10 @@ namespace Simulation {
 
 
         public CirclesFactory(Settings settings, int randomSeed) {
+            Configure(settings, randomSeed);
+        }
+
+        public void Configure(Settings settings, int randomSeed) {
             _rand = new Random(randomSeed);
             Settings = settings;
         }
@@ -23,6 +27,14 @@ namespace Simulation {
             return circles;
         }
 
+        public Circle[] CreateCirclesFromData(CircleData[] data) {
+            Circle[] circles = new Circle[data.Length];
+            for (int i = 0; i < data.Length; i++) {
+                circles[i] = CreateCircle(data[i]);
+            }
+            return circles;
+        }
+
         private Circle CreateRandomCircle(CircleColor color) {
             double radius = _rand.NextDouble() * (Settings.MaxUnitRadius - Settings.MinUnitRadius) + Settings.MinUnitRadius;
 
@@ -33,12 +45,16 @@ namespace Simulation {
 
             double speed = _rand.NextDouble() * (Settings.MaxUnitSpeed - Settings.MinUnitSpeed) + Settings.MinUnitSpeed;
 
-            return new Circle(new CircleData() {
+            return CreateCircle(new CircleData() {
                 Position = new Vector2(x, y),
                 Velocity = new Vector2(speed * Math.Cos(angle), speed * Math.Sin(angle)),
                 Radius = radius,
                 Color = color
             });
+        }
+
+        private Circle CreateCircle(CircleData data) {
+            return new Circle(data);
         }
 
     }
