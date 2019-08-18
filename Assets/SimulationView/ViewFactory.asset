@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b998f214537673340b6eaa87bdd5bd18, type: 3}
+  m_Name: ViewFactory
+  m_EditorClassIdentifier: 
+  _simulationAreaPrefab: {fileID: 1065288640557210, guid: 11dad0d8bbceaac469fac00856f735c2,
+    type: 2}
+  _redCirclePrefab: {fileID: 114790682393546172, guid: ddd75d7f9cdbba84f8f8508a3228fb49,
+    type: 2}
+  _blueCirclePrefab: {fileID: 114774698389451406, guid: 7aa41595d8a55ad41b9dc8700ab5f7db,
+    type: 2}
