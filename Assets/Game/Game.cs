@@ -20,7 +20,6 @@ public class Game : MonoBehaviour {
 
 
     private void Awake() {
-
         _gameSettings = new Settings() {
             GameAreaWidth = 50,
             GameAreaHeight = 50,
@@ -33,21 +32,22 @@ public class Game : MonoBehaviour {
         };
 
         _circlesFactory = new CirclesFactory(_gameSettings, UnityEngine.Random.Range(int.MinValue, int.MaxValue));
-        _simulation = new Simulation.Simulation(_circlesFactory.GenerateCircles(), _gameSettings);
+        var generatedCircles = _circlesFactory.GenerateCircles();
+        _simulation = new Simulation.Simulation(generatedCircles, _gameSettings);
 
         _simulationAreaSize = new Vector2(_gameSettings.GameAreaWidth, _gameSettings.GameAreaHeight);
         SetupCamera();
         SetupUI();
 
-        SetupSimulationView();
+        SetupSimulationView(generatedCircles);
 
 #if UNITY_EDITOR
         new PauseHandlerForEditor(_gameSpeedSlider);
 #endif
     }
 
-    private void SetupSimulationView() {
-        _view = _viewFactory.CreateSimulationView(_simulationAreaSize, _simulation.Circles);
+    private void SetupSimulationView(Circle[] circles) {
+        _view = _viewFactory.CreateSimulationView(_simulationAreaSize, circles);
         _view.Setup(_simulationAreaSize);
     }
 

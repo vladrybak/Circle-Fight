@@ -11,9 +11,9 @@ public class ViewFactory : ScriptableObject {
     [SerializeField] private CircleView _blueCirclePrefab;
 
 
-    public SimulationView CreateSimulationView(Vector2 size, Circle[] circlesData) {
+    public SimulationView CreateSimulationView(Vector2 size, Circle[] circles) {
         var area = CreateSimulationArea(size);
-        InstantiateCircleViews(circlesData, area.transform);
+        InstantiateCircleViews(circles, area.transform);
         var view = area.gameObject.AddComponent<SimulationView>();
         return view;
     }
@@ -25,11 +25,11 @@ public class ViewFactory : ScriptableObject {
         return area;
     }
 
-    private Transform[] InstantiateCircleViews(Circle[] circlesData, Transform parent) {
-        var circleViews = new Transform[circlesData.Length];
-        for (int i = 0; i < circlesData.Length; i++) {
-            var circleView = Instantiate(GetCirclePrefab(circlesData[i].Color), parent, false);
-            circleView.Setup(circlesData[i]);
+    private Transform[] InstantiateCircleViews(Circle[] circles, Transform parent) {
+        var circleViews = new Transform[circles.Length];
+        for (int i = 0; i < circles.Length; i++) {
+            var circleView = Instantiate(GetCirclePrefab(circles[i].Color), parent, false);
+            circleView.Setup(circles[i]);
             circleViews[i] = circleView.transform;
         }
         return circleViews;

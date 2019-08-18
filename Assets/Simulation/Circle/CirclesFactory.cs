@@ -17,14 +17,13 @@ namespace Simulation {
             var circles = new Circle[Settings.NumUnitsToSpawn];
 
             for (int i = 0; i < circles.Length; i++) {
-                circles[i] = CreateRandomCircle();
-                circles[i].Color = (i % 2 == 0) ? CircleColor.Red : CircleColor.Blue;
+                circles[i] = CreateRandomCircle((i % 2 == 0) ? CircleColor.Red : CircleColor.Blue);
             }
 
             return circles;
         }
 
-        private Circle CreateRandomCircle() {
+        private Circle CreateRandomCircle(CircleColor color) {
             double radius = _rand.NextDouble() * (Settings.MaxUnitRadius - Settings.MinUnitRadius) + Settings.MinUnitRadius;
 
             float x = _rand.Next(Settings.GameAreaWidth);
@@ -34,11 +33,12 @@ namespace Simulation {
 
             double speed = _rand.NextDouble() * (Settings.MaxUnitSpeed - Settings.MinUnitSpeed) + Settings.MinUnitSpeed;
 
-            return new Circle() {
+            return new Circle(new CircleData() {
                 Position = new Vector2(x, y),
                 Velocity = new Vector2(speed * Math.Cos(angle), speed * Math.Sin(angle)),
-                Radius = (float)radius
-            };
+                Radius = radius,
+                Color = color
+            });
         }
 
     }

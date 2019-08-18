@@ -17,12 +17,12 @@ namespace Simulation {
             _areaSize = areaSize;
         }
 
-        public void UpdateCollisions(Circle[] circles) {
+        public void UpdateCollisions(List<Circle> circles) {
             CircleCollisions.Clear();
             BorderCollisions.Clear();
-            for(int i = 0; i < circles.Length; i++) {
+            for(int i = 0; i < circles.Count; i++) {
                 CheckEdgeCollisions(circles[i]);
-                for(int j = i + 1; j < circles.Length; j++) 
+                for(int j = i + 1; j < circles.Count; j++) 
                     CheckCircleCollision(circles[i], circles[j]);    
             }
         }

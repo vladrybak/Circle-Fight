@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 namespace Simulation {
+    [Serializable]
     public struct Vector2 {
 
         public double X;
@@ -104,6 +103,10 @@ namespace Simulation {
 
         public override int GetHashCode() {
             return X.GetHashCode() + Y.GetHashCode();
+        }
+
+        public override string ToString() {
+            return string.Format("({0}, {1}", X, Y);
         }
 
     }

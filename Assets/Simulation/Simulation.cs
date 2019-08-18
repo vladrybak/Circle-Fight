@@ -1,30 +1,34 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Timers;
 
 namespace Simulation {
     public class Simulation {
 
-        public Circle[] Circles { get; private set; }
-        public float SimulationRateInSeconds;
+        private List<Circle> _activeCircles;
 
+        public float SimulationRateInSeconds;
         private Timer _timer;
 
         private CollisionsDetector _collisionsDetector;
         private CircleCollisionsResolver _circleCollisionsResolver;
         private RectangleBorderCollisionsResolver _borderCollisionsResolver;
 
+        private CirclesSpawner _circleSpawner;
         private CirclesDestroyer _circleDestroyer;
 
 
         public Simulation(Circle[] circles, Settings simulationSettings) {
-            Circles = circles;
-            CalculateSimulationRate(simulationSettings.MaxUnitSpeed, simulationSettings.MinUnitRadius);
+            _activeCircles = new List<Circle>(circles.Length);
             var size = new Vector2(simulationSettings.GameAreaWidth, simulationSettings.GameAreaHeight);
+
+            CalculateSimulationRate(simulationSettings.MaxUnitSpeed, simulationSettings.MinUnitRadius);
 
             _collisionsDetector = new CollisionsDetector(simulationSettings.NumUnitsToSpawn, size);
 
             _circleCollisionsResolver = new CircleCollisionsResolver();
             _borderCollisionsResolver = new RectangleBorderCollisionsResolver(size);
+
+            _circleSpawner = new CirclesSpawner(circles, simulationSettings.UnitSpawnDelay);
             _circleDestroyer = new CirclesDestroyer();
         }
 
@@ -47,18 +51,27 @@ namespace Simulation {
         }
 
         private void Update(object sender, ElapsedEventArgs e) {
-            foreach (var c in Circles)
+            if (_circleSpawner.HasUnitsToSpawn) {
+                _circleSpawner.Spawn(e.SignalTime.Millisecond, _activeCircles);
+            } else {
+                MoveCircles();
+            }
+            ProcessCollisions();
+            _circleDestroyer.Destroy(_activeCircles);
+        }
+
+        private void MoveCircles() {
+            foreach (var c in _activeCircles)
                 MoveCircle(c);
+        }
 
-            _collisionsDetector.UpdateCollisions(Circles);
+        private void ProcessCollisions() {
+            _collisionsDetector.UpdateCollisions(_activeCircles);
 
-            foreach(var c in _collisionsDetector.BorderCollisions)
+            foreach (var c in _collisionsDetector.BorderCollisions)
                 _borderCollisionsResolver.Resolve(c);
             foreach (var c in _collisionsDetector.CircleCollisions)
                 _circleCollisionsResolver.Resolve(c);
-
-            _circleDestroyer.Destroy(Circles);
-            Circles = _circleDestroyer.GetSurvivors();
         }
 
         private void MoveCircle(Circle circle) {
