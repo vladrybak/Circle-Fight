@@ -1,4 +1,7 @@
-﻿namespace Simulation {
+﻿using System;
+
+namespace Simulation {
+    [Serializable]
     public class Settings {
 
         public int GameAreaWidth;
@@ -12,3 +15,4 @@
 
     }
 }
+

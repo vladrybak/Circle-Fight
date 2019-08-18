@@ -20,16 +20,7 @@ public class Game : MonoBehaviour {
 
 
     private void Awake() {
-        _gameSettings = new Settings() {
-            GameAreaWidth = 50,
-            GameAreaHeight = 50,
-            UnitSpawnDelay = 500,
-            NumUnitsToSpawn = 500,
-            MinUnitRadius = 0.5f,
-            MaxUnitRadius = 1,
-            MinUnitSpeed = 5f,
-            MaxUnitSpeed = 10f
-        };
+        _gameSettings = Configuration.LoadGameConfig();
 
         _circlesFactory = new CirclesFactory(_gameSettings, UnityEngine.Random.Range(int.MinValue, int.MaxValue));
         var generatedCircles = _circlesFactory.GenerateCircles();
