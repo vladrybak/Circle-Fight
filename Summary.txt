@@ -1,0 +1,11 @@
+Summary
+
+There is a strange condition in task, that both colliding circles should be destroyed. It means there will be no winner color, because they annigilate each other. Also, I'm not sure what bouncing back means, so I implemented a simple bouncing and bouncing back as a Velocity negate.
+
+The entry point of the Game is a script called Game. Here I create all entities and obviously create dependencies.
+The simulation is fully independent. It runs on a system timer, which is multithreaded, so it quite perfomant. Unity used only for control and display it.
+
+Because simulation is deterministic it's possible to repeat it, so I pass a random seed to cirles factory, where circles randomly generated. It gives a possibility to save replay as a random seed + simulation iterations count. It can be useful for finding bugs for example.
+
+For store prefabs for simulation view and UI I used a scriptable object. It gives a simple way to make ab test on visuals, just creating and loading a various instances.
+
