@@ -13,6 +13,7 @@ public class ProjectBuilder : MonoBehaviour
         BuildPlayerOptions options = new BuildPlayerOptions();
         options.scenes = sceneNames;
         options.locationPathName = "Assets/Builds";
+        options.target = EditorUserBuildSettings.activeBuildTarget;
         Debug.Log("Start building player");
         BuildPipeline.BuildPlayer(options);
         Debug.Log("Building complete");
